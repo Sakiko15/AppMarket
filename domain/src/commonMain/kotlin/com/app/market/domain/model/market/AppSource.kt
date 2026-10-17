@@ -110,7 +110,7 @@ enum class AppSource(val token: String, val capabilities: SourceCapabilities) {
     );
 
     companion object {
-        val Default: Set<AppSource> = setOf(WANDOUJIA)
+        val Default: Set<AppSource> = setOf(XIAOMI)
 
         /** 今日页内容来源默认值；须为声明了 [SourceCapabilities.supportsTodayFeed] 的源。 */
         val DefaultTodaySource: AppSource = XIAOMI

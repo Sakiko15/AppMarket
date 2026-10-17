@@ -13,6 +13,14 @@ class AppSourceTest {
     }
 
     @Test
+    fun defaultSearchSourceIsXiaomi() {
+        assertEquals(setOf(AppSource.XIAOMI), AppSource.Default)
+        assertEquals(setOf(AppSource.XIAOMI), AppSource.parse(null))
+        assertEquals(setOf(AppSource.XIAOMI), AppSource.parse(""))
+        assertEquals(setOf(AppSource.XIAOMI), AppSource.parse("   "))
+    }
+
+    @Test
     fun capabilitiesMatchRoutingContract() {
         // 评论 / 同开发者应用目前只有小米与 OPPO 支持
         assertTrue(AppSource.XIAOMI.capabilities.supportsComments)

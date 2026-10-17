@@ -6,7 +6,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
@@ -16,12 +15,10 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -48,21 +45,15 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.market.resources.Res
-import com.app.market.resources.about_open_source_licenses
 import com.app.market.resources.about_title
 import com.app.market.resources.app_name
 import com.app.market.resources.back
 import com.app.market.resources.ic_launcher
-import com.app.market.ui.component.SectionTitle
 import com.app.market.ui.component.blur.BlurredBar
-import com.app.market.ui.component.blur.ColorBlendToken
 import com.app.market.ui.component.blur.rememberBlurBackdrop
-import com.app.market.ui.component.blur.rememberBlurEnabled
 import com.app.market.ui.component.effect.BgEffectBackground
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import top.yukonga.miuix.kmp.basic.Card
-import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
@@ -79,7 +70,6 @@ import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.textureBlur
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Back
-import top.yukonga.miuix.kmp.preference.ArrowPreference
 import top.yukonga.miuix.kmp.squircle.squircleClip
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
@@ -149,7 +139,6 @@ fun AboutScreen(
                 scrollBehavior = scrollBehavior,
                 lazyListState = lazyListState,
                 scrollProgress = scrollProgress,
-                onOpenUrl = onOpenUrl,
             )
         }
     }
@@ -161,25 +150,15 @@ private fun AboutContent(
     scrollBehavior: ScrollBehavior,
     lazyListState: LazyListState,
     scrollProgress: State<Float>,
-    onOpenUrl: (String) -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
     val density = LocalDensity.current
 
-    // 内容区至少铺满一屏（LazyColumn 视口高），内容更高时按内容增长——横屏矮视口下用固定高会把超出部分裁掉
-    val viewportHeight by remember {
-        derivedStateOf { lazyListState.layoutInfo.viewportSize.height }
-    }
-
     val backdrop = rememberBlurBackdrop()
 
     val isDark = isSystemInDarkTheme()
-    val blurEnabled by rememberBlurEnabled()
     val effectBackground = remember { isRuntimeShaderSupported() }
 
-    val cardBlendColors = remember(isDark) {
-        if (isDark) ColorBlendToken.Overlay_Extra_Thin_Dark else ColorBlendToken.Pured_Regular_Light
-    }
     val logoBlend = remember(isDark) {
         if (isDark) {
             listOf(
@@ -316,136 +295,6 @@ private fun AboutContent(
                     contentAlignment = Alignment.TopCenter,
                     content = { },
                 )
-            }
-
-            item(key = "about") {
-                Column(modifier = Modifier.heightIn(min = with(density) { viewportHeight.toDp() }).padding(bottom = 12.dp)) {
-                    SectionTitle(text = stringResource(Res.string.about_open_source_licenses))
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                            .then(
-                                if (backdrop != null) {
-                                    Modifier.textureBlur(
-                                        backdrop = backdrop,
-                                        shape = RoundedCornerShape(16.dp),
-                                        blurRadius = 60f,
-                                        noiseCoefficient = BlurDefaults.NoiseCoefficient,
-                                        colors = BlurColors(blendColors = cardBlendColors),
-                                        enabled = true,
-                                    )
-                                } else Modifier
-                        ),
-                        colors = CardDefaults.defaultColors(
-                            if (backdrop != null && blurEnabled) Color.Transparent else colorScheme.surfaceContainer,
-                            Color.Transparent,
-                        ),
-                    ) {
-                        ArrowPreference(
-                            title = "AndroidX Activity",
-                            summary = "developer.android.com/jetpack/androidx/releases/activity",
-                            onClick = { onOpenUrl("https://developer.android.com/jetpack/androidx/releases/activity") },
-                        )
-                        ArrowPreference(
-                            title = "AndroidX Core",
-                            summary = "developer.android.com/jetpack/androidx/releases/core",
-                            onClick = { onOpenUrl("https://developer.android.com/jetpack/androidx/releases/core") },
-                        )
-                        ArrowPreference(
-                            title = "AndroidX DataStore",
-                            summary = "developer.android.com/jetpack/androidx/releases/datastore",
-                            onClick = { onOpenUrl("https://developer.android.com/jetpack/androidx/releases/datastore") },
-                        )
-                        ArrowPreference(
-                            title = "AndroidX Lifecycle",
-                            summary = "developer.android.com/jetpack/androidx/releases/lifecycle",
-                            onClick = { onOpenUrl("https://developer.android.com/jetpack/androidx/releases/lifecycle") },
-                        )
-                        ArrowPreference(
-                            title = "AndroidX Navigation Event",
-                            summary = "developer.android.com/jetpack/androidx/releases/navigationevent",
-                            onClick = { onOpenUrl("https://developer.android.com/jetpack/androidx/releases/navigationevent") },
-                        )
-                        ArrowPreference(
-                            title = "AndroidX SplashScreen",
-                            summary = "developer.android.com/jetpack/androidx/releases/core",
-                            onClick = { onOpenUrl("https://developer.android.com/jetpack/androidx/releases/core") },
-                        )
-                        ArrowPreference(
-                            title = "coil",
-                            summary = "github.com/coil-kt/coil",
-                            onClick = { onOpenUrl("https://github.com/coil-kt/coil") },
-                        )
-                        ArrowPreference(
-                            title = "Compose Media Player",
-                            summary = "github.com/kdroidFilter/ComposeMediaPlayer",
-                            onClick = { onOpenUrl("https://github.com/kdroidFilter/ComposeMediaPlayer") },
-                        )
-                        ArrowPreference(
-                            title = "Compose Multiplatform",
-                            summary = "github.com/JetBrains/compose-multiplatform",
-                            onClick = { onOpenUrl("https://github.com/JetBrains/compose-multiplatform") },
-                        )
-                        ArrowPreference(
-                            title = "HDiffPatch",
-                            summary = "github.com/sisong/HDiffPatch",
-                            onClick = { onOpenUrl("https://github.com/sisong/HDiffPatch") },
-                        )
-                        ArrowPreference(
-                            title = "HiddenApiBypass",
-                            summary = "github.com/LSPosed/AndroidHiddenApiBypass",
-                            onClick = { onOpenUrl("https://github.com/LSPosed/AndroidHiddenApiBypass") },
-                        )
-                        ArrowPreference(
-                            title = "HyperNotification",
-                            summary = "github.com/xzakota/HyperNotification",
-                            onClick = { onOpenUrl("https://github.com/xzakota/HyperNotification") },
-                        )
-                        ArrowPreference(
-                            title = "Koin",
-                            summary = "github.com/InsertKoinIO/koin",
-                            onClick = { onOpenUrl("https://github.com/InsertKoinIO/koin") },
-                        )
-                        ArrowPreference(
-                            title = "kotlinx-datetime",
-                            summary = "github.com/Kotlin/kotlinx-datetime",
-                            onClick = { onOpenUrl("https://github.com/Kotlin/kotlinx-datetime") },
-                        )
-                        ArrowPreference(
-                            title = "kotlinx.collections.immutable",
-                            summary = "github.com/Kotlin/kotlinx.collections.immutable",
-                            onClick = { onOpenUrl("https://github.com/Kotlin/kotlinx.collections.immutable") },
-                        )
-                        ArrowPreference(
-                            title = "kotlinx.coroutines",
-                            summary = "github.com/Kotlin/kotlinx.coroutines",
-                            onClick = { onOpenUrl("https://github.com/Kotlin/kotlinx.coroutines") },
-                        )
-                        ArrowPreference(
-                            title = "kotlinx.serialization",
-                            summary = "github.com/Kotlin/kotlinx.serialization",
-                            onClick = { onOpenUrl("https://github.com/Kotlin/kotlinx.serialization") },
-                        )
-                        ArrowPreference(
-                            title = "ktor",
-                            summary = "github.com/ktorio/ktor",
-                            onClick = { onOpenUrl("https://github.com/ktorio/ktor") },
-                        )
-                        ArrowPreference(
-                            title = "miuix",
-                            summary = "github.com/compose-miuix-ui/miuix",
-                            onClick = { onOpenUrl("https://github.com/compose-miuix-ui/miuix") },
-                        )
-                        ArrowPreference(
-                            title = "Shizuku",
-                            summary = "github.com/RikkaApps/Shizuku",
-                            onClick = { onOpenUrl("https://github.com/RikkaApps/Shizuku") },
-                        )
-                    }
-
-                    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
-                }
             }
         }
     }
